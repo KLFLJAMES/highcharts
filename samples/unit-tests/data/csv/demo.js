@@ -662,7 +662,8 @@ QUnit.test('csv-quoted-data-escaped', function (assert) {
     );
 });
 
-QUnit.test('startRow, endRow', function (assert) {
+
+QUnit.test('startRow, endRow, startColumn, endColumn', function (assert) {
     var data =
         'Pad,Pad,Pad,Pad\n' +
         'Pad,Apples,Pears,Pad\n' +
@@ -674,7 +675,20 @@ QUnit.test('startRow, endRow', function (assert) {
         csv: data,
         startRow: 1,
         endRow: 3,
+        startColumn: 1,
+        endColumn: 2,
         parsed: function () {
+
+            assert.strictEqual(
+                this.columns.length,
+                2,
+                'Two columns included'
+            );
+            assert.strictEqual(
+                this.columns[0].join(','),
+                'Apples,1,5',
+                'First column ok'
+            );
             assert.strictEqual(
                 this.columns[0].length,
                 3,
@@ -685,3 +699,30 @@ QUnit.test('startRow, endRow', function (assert) {
 
 });
 
+QUnit.test('Comments in CSV', function (assert) {
+    var data = [
+        '# -------',
+        '# Comment',
+        '# ----',
+        'Apples,Pears',
+        '1,2# Inline comment',
+        '3,4',
+        '5,6'
+    ].join('\n');
+
+    Highcharts.data({
+        csv: data,
+        parsed: function () {
+            assert.strictEqual(
+                this.columns[0].join(','),
+                'Apples,1,3,5',
+                'First column ok'
+            );
+            assert.strictEqual(
+                this.columns[1].join(','),
+                'Pears,2,4,6',
+                'Second column ok'
+            );
+        }
+    });
+});
