@@ -965,6 +965,7 @@ const generateAPI = (input, output, onlyBuildCurrent) => new Promise((resolve, r
 
 /**
  * Creates the Highcharts API
+ * 创建 Highcharts API 并生成 tree.json
  *
  * @param {object} options The options for generating the API
  * @param {string} options.treeFile Location of the json file to generate the
@@ -1045,6 +1046,7 @@ const startServer = () => {
     const base = '127.0.0.1:' + docport;
     const apiPath = __dirname + '/build/api/';
     const mimes = {
+        txt: 'text/plain',
         png: 'image/png',
         js: 'text/javascript',
         json: 'text/json',
@@ -1091,10 +1093,13 @@ const startServer = () => {
             let ti = path.lastIndexOf('.');
             if (ti < 0 || path.length === 0) {
                 file = 'index.html';
+                // res.setHeader('Content-Type', mimes.html)
                 res.writeHead(200, { 'Content-Type': mimes.html });
             } else {
                 file = path.substr(path.lastIndexOf('/') + 1);
-                res.writeHead(200, { 'Content-Type': mimes[path.substr(ti + 1)] });
+                // console.log(file, mimes[path.substr(ti + 1)], path.substr(ti + 1))
+                // res.setHeader('Content-Type', mimes[path.substr(ti + 1)] || 'text/plain')
+                res.writeHead(200, { 'Content-Type': mimes[path.substr(ti + 1)] || 'text/html'});
             }
 
             let ext = file.substr(file.lastIndexOf('.') + 1);
@@ -1173,7 +1178,9 @@ gulp.task('jsdoc', () => {
         console.log('Tip: use the --watch argument to watch JS file changes');
     }
 
+    // 生成 Class 及 Namespace 相关文档
     return generateClassReferences(optionsClassReference)
+    // 生成 API 文档
         .then(() => generateAPIDocs(optionsAPI));
 });
 /**

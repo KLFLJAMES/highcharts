@@ -910,7 +910,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 
 
 		/**
-		 * The Chart that the axis belongs to.
+		 * 当前图表对象
 		 *
 		 * @name chart
 		 * @memberOf Axis
@@ -919,7 +919,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 		axis.chart = chart;
 		
 		/**
-		 * Whether the axis is horizontal.
+		 * 当前坐标轴是否是水平轴
 		 *
 		 * @name horiz
 		 * @memberOf Axis
@@ -931,8 +931,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 		axis.isXAxis = isXAxis;
 
 		/**
-		 * The collection where the axis belongs, for example `xAxis`, `yAxis`
-		 * or `colorAxis`. Corresponds to properties on Chart, for example
+		 * 当前坐标做所属的类型集合，可以是 `xAxis`, `yAxis` 或 `colorAxis`。Corresponds to properties on Chart, for example
 		 * {@link Chart.xAxis}.
 		 *
 		 * @name coll

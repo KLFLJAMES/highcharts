@@ -169,8 +169,12 @@ function nodeVisitor(node, e, parser, currentSourceName) {
     }
 
     if (node.leadingComments && node.leadingComments.length > 0) {
+
         comment = node.leadingComments[0].raw;
 
+        if(!comment) {
+            return;
+        }
         s = comment.indexOf('@optionparent');
 
         if (s >= 0) {
