@@ -35,8 +35,9 @@ var Highcharts = win.Highcharts ? win.Highcharts.error(16, true) : {
 		return undefined;
 	},
 	/**
-	 * 包含当前页面图表对象的数组。
-	 * 图表对象的顺序贯穿整个页面的生命周期，当某个图表对象被销毁后，该数组中对应的数组想就变为 `undefined`
+	 * 包含当前页面所有图表对象的数组。
+	 * 
+	 * 图表对象的顺序贯穿整个页面的生命周期，当某个图表被销毁后，该数组中对应的值会变成 `undefined`
 	 * @type {Array.<Highcharts.Chart>}
 	 * @memberOf Highcharts
 	 */

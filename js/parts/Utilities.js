@@ -41,7 +41,7 @@ var charts = H.charts,
  */
 H.error = function (code, stop) {
 	var msg = H.isNumber(code) ?
-		'Highcharts error #' + code + ': www.highcharts.com/errors/' + code :
+		'Highcharts error #' + code + ': https://www.hcharts.cn/errors/' + code :
 		code;
 	if (stop) {
 		throw new Error(msg);
@@ -428,7 +428,7 @@ H.Fx.prototype.strokeSetter = function () {
 };
 
 /**
- * Utility function to extend an object with the members of another.
+ * 对象复制（浅拷贝）
  *
  * @function #extend
  * @memberOf Highcharts
@@ -448,6 +448,8 @@ H.extend = function (a, b) {
 };
 
 /**
+ * 深拷贝多个对象。
+ * 
  * Utility function to deep merge two or more objects and return a third object.
  * If the first argument is true, the contents of the second object is copied
  * into the first object. The merge function can also be used with a single 
@@ -509,7 +511,7 @@ H.merge = function () {
 };
 
 /**
- * Shortcut for parseInt
+ * parseInt 的缩写形式
  * @ignore
  * @param {Object} s
  * @param {Number} mag Magnitude
@@ -531,12 +533,14 @@ H.isString = function (s) {
 };
 
 /**
- * Utility function to check if an item is an array.
+ * 数组判定
+ *
+ * 检查给定的内容是否是数组
  *
  * @function #isArray
  * @memberOf Highcharts
- * @param {Object} obj - The item to check.
- * @returns {Boolean} - True if the argument is an array.
+ * @param {Object} obj - 需要检查的内容
+ * @returns {Boolean} - 对象是数组类型则返回 true，否则返回 false。
  */
 H.isArray = function (obj) {
 	var str = Object.prototype.toString.call(obj);
@@ -544,11 +548,13 @@ H.isArray = function (obj) {
 };
 
 /**
- * Utility function to check if an item is of type object.
+ * 对象判定
+ * 
+ * 检查给定的内容是否是对象
  *
  * @function #isObject
  * @memberOf Highcharts
- * @param {Object} obj - The item to check.
+ * @param {Object} obj - 需要检查的内容
  * @param {Boolean} [strict=false] - Also checks that the object is not an
  *    array.
  * @returns {Boolean} - True if the argument is an object.
@@ -558,6 +564,8 @@ H.isObject = function (obj, strict) {
 };
 
 /**
+ * HTML Dom 判定
+ * 
  * Utility function to check if an Object is a HTML Element.
  *
  * @function #isDOMElement
@@ -570,6 +578,8 @@ H.isDOMElement = function (obj) {
 };
 
 /**
+ * 类判定
+ * 
  * Utility function to check if an Object is an class.
  *
  * @function #isClass
@@ -587,6 +597,8 @@ H.isClass = function (obj) {
 };
 
 /**
+ * 数值判定
+ * 
  * Utility function to check if an item is of type number.
  *
  * @function #isNumber
@@ -617,22 +629,21 @@ H.erase = function (arr, item) {
 };
 
 /**
- * Check if an object is null or undefined.
+ * 检查对象是否为 null 或 undefined 
  *
  * @function #defined
  * @memberOf Highcharts
  * @param {Object} obj - The object to check.
- * @returns {Boolean} - False if the object is null or undefined, otherwise
- *        true.
+ * @returns {Boolean} - 对象为 null 或 undefined 是返回 false，否则返回 true。
  */
 H.defined = function (obj) {
 	return obj !== undefined && obj !== null;
 };
 
 /**
- * Set or get an attribute or an object of attributes. To use as a setter, pass
- * a key and a value, or let the second argument be a collection of keys and
- * values. To use as a getter, pass only a string as the second argument.
+ * 设置或获取对象的属性。
+ * 
+ * 当设置属性时，请传递第二个和第三个参数，或将第二个参数写成对象形式。如果是获取属性，只需要传递第二个参数。
  *
  * @function #attr
  * @memberOf Highcharts
@@ -665,7 +676,7 @@ H.attr = function (elem, prop, value) {
 };
 
 /**
- * Check if an element is an array, and if not, make it into an array.
+ * 检查内容是否为数组，如果不是，则包装成数组
  *
  * @function #splat
  * @memberOf Highcharts
@@ -677,15 +688,16 @@ H.splat = function (obj) {
 };
 
 /**
- * Set a timeout if the delay is given, otherwise perform the function
- * synchronously.
+ * 延迟执行函数。
+ * 
+ * 当指定了延迟时间，则在 setTimeout 中执行这个函数，没有指定则是直接执行这个函数
  *
  * @function #syncTimeout
  * @memberOf Highcharts
  * @param   {Function} fn - The function callback.
  * @param   {Number}   delay - Delay in milliseconds.
  * @param   {Object}   [context] - The context.
- * @returns {Number} An identifier for the timeout that can later be cleared
+ * @returns {Number} timeout 函数的标识对象，用于后续的清除操作。
  * with clearTimeout.
  */
 H.syncTimeout = function (fn, delay, context) {
@@ -697,7 +709,7 @@ H.syncTimeout = function (fn, delay, context) {
 
 
 /**
- * Return the first value that is not null or undefined.
+ * 返回第一个不为 null 或 undefined 的参数
  *
  * @function #pick
  * @memberOf Highcharts
@@ -728,12 +740,12 @@ H.pick = function () {
  * }
  */
 /**
- * Set CSS on a given element.
+ * 给指定的 DOM 设置 CSS 样式
  *
  * @function #css
  * @memberOf Highcharts
- * @param {HTMLDOMElement} el - A HTML DOM element.
- * @param {CSSObject} styles - Style object with camel case property names.
+ * @param {HTMLDOMElement} el - HTML DOM 对象
+ * @param {CSSObject} styles - 样式对象，注意属性的名字是以驼峰命名的，例如 `fontSize`。
  * 
  */
 H.css = function (el, styles) {
@@ -746,22 +758,21 @@ H.css = function (el, styles) {
 };
 
 /**
- * A HTML DOM element.
+ * HTML DOM
  * @typedef {Object} HTMLDOMElement
  */
 
 /**
- * Utility function to create an HTML element with attributes and styles.
+ * 用于创建 HTML DOM 的工具函数，同时可以指定 DOM 的属性和样式
  *
  * @function #createElement
  * @memberOf Highcharts
- * @param {String} tag - The HTML tag.
- * @param {Object} [attribs] - Attributes as an object of key-value pairs.
- * @param {CSSObject} [styles] - Styles as an object of key-value pairs.
- * @param {Object} [parent] - The parent HTML object.
- * @param {Boolean} [nopad=false] - If true, remove all padding, border and
- *    margin.
- * @returns {HTMLDOMElement} The created DOM element.
+ * @param {String} tag - HTML 标签.
+ * @param {Object} [attribs] - 属性，对象形式。
+ * @param {CSSObject} [styles] - 样式，对象形式。
+ * @param {Object} [parent] - 父级 DOM.
+ * @param {Boolean} [nopad=false] - 是否去掉边距，如果为 true ，则去掉所有的 padding，margin 及边框
+ * @returns {HTMLDOMElement} 创建的 DOM
  */
 H.createElement = function (tag, attribs, styles, parent, nopad) {
 	var el = doc.createElement(tag),
@@ -871,6 +882,7 @@ H.wrap = function (obj, method, func) {
 };
 
 /**
+ * 根据全局配置获取当前的时区信息。
  * Get the time zone offset based on the current timezone information as set in
  * the global options.
  *
@@ -886,19 +898,19 @@ H.getTZOffset = function (timestamp) {
 };
 
 /**
- * Formats a JavaScript date timestamp (milliseconds since Jan 1st 1970) into a
- * human readable date string. The format is a subset of the formats for PHP's
+ * 时间格式化函数
+ * 将 JavaScript 时间戳 （ 1970 年 1月到现在的毫秒数）转换成更易读的形式（例如 2017/01/01 这种形式）。
+ * 其中 `format` 参数是 PHP 时间格式化字符的子集
  * [strftime]{@link
- * http://www.php.net/manual/en/function.strftime.php} function. Additional
- * formats can be given in the {@link Highcharts.dateFormats} hook.
+ * http://www.php.net/manual/en/function.strftime.php}。
+ * 另外可以通过 {@link Highcharts.dateFormats} 来自定义格式化字符。
  *
  * @function #dateFormat
  * @memberOf Highcharts
- * @param {String} format - The desired format where various time
- *        representations are prefixed with %.
- * @param {Number} timestamp - The JavaScript timestamp.
- * @param {Boolean} [capitalize=false] - Upper case first letter in the return.
- * @returns {String} The formatted date.
+ * @param {String} format - 以 % 开头的时间格式化字符。
+ * @param {Number} timestamp - JavaScript 时间戳
+ * @param {Boolean} [capitalize=false] - 是否以首字母大写的形式返回结果（用于英文）
+ * @returns {String} 格式化后的字符串
  */
 H.dateFormat = function (format, timestamp, capitalize) {
 	if (!H.defined(timestamp) || isNaN(timestamp)) {
@@ -1009,7 +1021,7 @@ H.dateFormat = function (format, timestamp, capitalize) {
 };
 
 /**
- * Format a single variable. Similar to sprintf, without the % prefix.
+ * 格式化单个变量，类似 C 语言中 printf 用法
  *
  * @example
  * formatSingle('.2f', 5); // => '5.00'.
@@ -1044,15 +1056,15 @@ H.formatSingle = function (format, val) {
 };
 
 /**
- * Format a string according to a subset of the rules of Python's String.format
- * method.
+ * 字符串格式化函数
+ * 
+ * 其格式化规则是 Python 中的 String.format 的子集
  *
  * @function #format
  * @memberOf Highcharts
- * @param {String} str The string to format.
- * @param {Object} ctx The context, a collection of key-value pairs where each
- *        key is replaced by its value.
- * @returns {String} The formatted string.
+ * @param {String} str 需要格式化的字符串。
+ * @param {Object} ctx 需要替换的内容，是键值对的形式。
+ * @returns {String} 格式化后的字符串。
  *
  * @example
  * var s = Highcharts.format(
@@ -1115,13 +1127,12 @@ H.format = function (str, ctx) {
 };
 
 /**
- * Get the magnitude of a number.
+ * 获取数值的数量级
  *
  * @function #getMagnitude
  * @memberOf Highcharts
- * @param {Number} number The number.
- * @returns {Number} The magnitude, where 1-9 are magnitude 1, 10-99 magnitude 2
- *        etc.
+ * @param {Number} 数值.
+ * @returns {Number} 数量级，例如 1-9 的数量级是 1， 10-99 的数量级是 2
  */
 H.getMagnitude = function (num) {
 	return Math.pow(10, Math.floor(Math.log(num) / Math.LN10));
@@ -1230,9 +1241,11 @@ H.stableSort = function (arr, sortFunction) {
 };
 
 /**
- * Non-recursive method to find the lowest member of an array. `Math.min` raises
- * a maximum call stack size exceeded error in Chrome when trying to apply more
- * than 150.000 points. This method is slightly slower, but safe.
+ * 非递归实现的查询数组最小值方法。 
+ *
+ * 
+ * 在 Chrome 中，当数组数量超过 150000 时使用 `Math.min`，会导致内存溢出问题。
+ * 这个函数相对 `Math.min` 慢，但是更安全
  *
  * @function #arrayMin
  * @memberOf  Highcharts
@@ -1252,9 +1265,11 @@ H.arrayMin = function (data) {
 };
 
 /**
- * Non-recursive method to find the lowest member of an array. `Math.max` raises
- * a maximum call stack size exceeded error in Chrome when trying to apply more
- * than 150.000 points. This method is slightly slower, but safe.
+ * 非递归实现的查询数组最大值方法。
+ * 
+ * 在 Chrome 中，当数组数量超过 150000 时使用 `Math.nax`，会导致内存溢出问题。
+ * 这个函数相对 `Math.max` 慢，但是更安全
+ *
  *
  * @function #arrayMax
  * @memberOf  Highcharts
@@ -1300,7 +1315,7 @@ H.destroyObjectProperties = function (obj, except) {
 
 
 /**
- * Discard a HTML element by moving it to the bin and delete.
+ * 删除 DOM 
  *
  * @function #discardElement
  * @memberOf Highcharts
@@ -1714,10 +1729,10 @@ H.objectEach = function (obj, fn, ctx) {
  *
  * @function #addEvent
  * @memberOf Highcharts
- * @param {Object} el - The element or object to add a listener to. It can be a
- *        {@link HTMLDOMElement}, an {@link SVGElement} or any other object.
+ * @param {Object} el - 需要添加事件的 DOM，可以是 
+ *        {@link HTMLDOMElement}、 {@link SVGElement} 或其他对象。
  * @param {String} type - 事件类型.
- * @param {Function} fn - 事件触发是执行的回调函数
+ * @param {Function} fn - 事件触发时执行的回调函数
  * @returns {Function} 用于删除事件的回调函数
  */
 H.addEvent = function (el, type, fn) {
@@ -1747,9 +1762,8 @@ H.addEvent = function (el, type, fn) {
  *
  * @function #removeEvent
  * @memberOf Highcharts
- * @param {Object} el - The element to remove events on.
- * @param {String} [type] - The type of events to remove. If undefined, all
- *        events are removed from the element.
+ * @param {Object} el - DOM.
+ * @param {String} [type] - 需要删除的事件类型，如果值是 undefined，则会把该 DOM 上的所有事件都删除
  * @param {Function} [fn] - The specific callback to remove. If undefined, all
  *        events that match the element and optionally the type are removed.
  * 
