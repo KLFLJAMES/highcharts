@@ -98,7 +98,7 @@ H.Fx.prototype = {
 				startVal = parseFloat(start[i]);
 				ret[i] =
 					isNaN(startVal) ? // a letter instruction like M or L
-							start[i] :
+							end[i] :
 							now * (parseFloat(end[i] - startVal)) + startVal;
 
 			}
@@ -1374,7 +1374,7 @@ H.animObject = function (animation) {
 };
 
 /**
- * The time unit lookup
+ * 常用的时间单位
  */
 H.timeUnits = {
 	millisecond: 1,
@@ -1388,18 +1388,15 @@ H.timeUnits = {
 };
 
 /**
- * Format a number and return a string based on input settings.
- *
+ * 数值格式化
+ * 
  * @function #numberFormat
  * @memberOf Highcharts
- * @param {Number} number - The input number to format.
- * @param {Number} decimals - The amount of decimals. A value of -1 preserves
- *        the amount in the input number.
- * @param {String} [decimalPoint] - The decimal point, defaults to the one given
- *        in the lang options, or a dot.
- * @param {String} [thousandsSep] - The thousands separator, defaults to the one
- *        given in the lang options, or a space character.
- * @returns {String} The formatted number.
+ * @param {Number} number - 需要格式化的数值。
+ * @param {Number} decimals - 需要保留的小数位。-1 表示保留全部位数
+ * @param {String} [decimalPoint] - 小数点符号，默认是取 `lang.decimalPoint` 值（默认是点号）。
+ * @param {String} [thousandsSep] - 千分号符号，默认是取 `lang.thousandsSep` 值（默认是空格）。
+ * @returns {String} 格式化后的字符串.
  *
  * @sample highcharts/members/highcharts-numberformat/ Custom number format
  */
@@ -1465,7 +1462,7 @@ H.numberFormat = function (number, decimals, decimalPoint, thousandsSep) {
 };
 
 /**
- * Easing definition
+ * 缓动函数定义
  * @ignore
  * @param   {Number} pos Current position, ranging from 0 to 1.
  */
@@ -1517,7 +1514,7 @@ H.getStyle = function (el, prop, toInt) {
 };
 
 /**
- * Search for an item in an array.
+ * 查找给定的内容是否在数组中
  *
  * @function #inArray
  * @memberOf Highcharts
@@ -1530,7 +1527,7 @@ H.inArray = function (item, arr) {
 };
 
 /**
- * Filter an array by a callback.
+ * 数组过滤
  *
  * @function #grep
  * @memberOf Highcharts
@@ -1545,13 +1542,12 @@ H.grep = function (arr, callback) {
 };
 
 /**
- * Return the value of the first element in the array that satisfies the 
- * provided testing function.
+ * 查找，返回数组中第一个满足条件函数的元素
  *
  * @function #find
  * @memberOf Highcharts
- * @param {Array} arr - The array to test.
- * @param {Function} callback - The callback function. The function receives the
+ * @param {Array} arr - 目标数组.
+ * @param {Function} callback - 条件函数， The function receives the
  *        item as the first argument. Return `true` if this item satisfies the
  *        condition.
  * @returns {Mixed} - The value of the element.
@@ -1573,7 +1569,7 @@ H.find = Array.prototype.find ?
 	};
 
 /**
- * Map an array by a callback.
+ * 对数组进行 map 操作
  *
  * @function #map
  * @memberOf Highcharts
@@ -1595,7 +1591,7 @@ H.map = function (arr, fn) {
 };
 
 /**
- * Returns an array of a given object's own properties.
+ * 返回包含目标对象属性的数组
  *
  * @function #keys
  * @memberOf highcharts
@@ -1650,7 +1646,7 @@ H.offset = function (el) {
 };
 
 /**
- * Stop running animation.
+ * 停止正在运行动画
  *
  * @todo A possible extension to this would be to stop a single property, when
  * we want to continue animating others. Then assign the prop to the timer
@@ -1678,7 +1674,7 @@ H.stop = function (el, prop) {
 };
 
 /**
- * Iterate over an array.
+ * 数组遍历
  *
  * @function #each
  * @memberOf Highcharts
@@ -1694,7 +1690,7 @@ H.each = function (arr, fn, ctx) { // modern browsers
 };
 
 /**
- * Iterate over object key pairs in an object.
+ * 对象遍历
  *
  * @function #objectEach
  * @memberOf Highcharts
@@ -1714,16 +1710,15 @@ H.objectEach = function (obj, fn, ctx) {
 };
 
 /**
- * Add an event listener.
+ * 添加事件
  *
  * @function #addEvent
  * @memberOf Highcharts
  * @param {Object} el - The element or object to add a listener to. It can be a
  *        {@link HTMLDOMElement}, an {@link SVGElement} or any other object.
- * @param {String} type - The event type.
- * @param {Function} fn - The function callback to execute when the event is 
- *        fired.
- * @returns {Function} A callback function to remove the added event.
+ * @param {String} type - 事件类型.
+ * @param {Function} fn - 事件触发是执行的回调函数
+ * @returns {Function} 用于删除事件的回调函数
  */
 H.addEvent = function (el, type, fn) {
 	
@@ -1748,7 +1743,7 @@ H.addEvent = function (el, type, fn) {
 };
 
 /**
- * Remove an event that was added with {@link Highcharts#addEvent}.
+ * 删除事件（删除通过 {@link Highcharts#addEvent} 方法增加的事件）
  *
  * @function #removeEvent
  * @memberOf Highcharts
@@ -1822,7 +1817,7 @@ H.removeEvent = function (el, type, fn) {
 };
 
 /**
- * Fire an event that was registered with {@link Highcharts#addEvent}.
+ * 触发事件（触发的事件是通过  {@link Highcharts#addEvent} 注册的）。
  *
  * @function #fireEvent
  * @memberOf Highcharts
@@ -2048,7 +2043,10 @@ H.uniqueKey = (function () {
 }());
 
 /**
- * Register Highcharts as a plugin in jQuery
+ * 将 Highcharts 注册为 jQuery 插件，用于提供 jQuery 插件形式的初始化方法，即
+ *
+ * 	$(el).highcharts(options) 的形式
+ * 
  */
 if (win.jQuery) {
 	win.jQuery.fn.highcharts = function () {

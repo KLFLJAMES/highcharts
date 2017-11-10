@@ -148,6 +148,33 @@ Series.prototype.drawDataLabels = function () {
 		defer = pick(options.defer, !!seriesOptions.animation),
 		renderer = series.chart.renderer;
 
+	/*
+	 * Handle the dataLabels.filter option.
+	 */
+	function applyFilter(point, options) {
+		var filter = options.filter,
+			op,
+			prop,
+			val;
+		if (filter) {
+			op = filter.operator;
+			prop = point[filter.property];
+			val = filter.value;
+			if (
+				(op === '>' && prop > val) ||
+				(op === '<' && prop < val) ||
+				(op === '>=' && prop >= val) ||
+				(op === '<=' && prop <= val) ||
+				(op === '==' && prop == val) || // eslint-disable-line eqeqeq
+				(op === '===' && prop === val)
+			) {
+				return true;
+			}
+			return false;
+		}
+		return true;
+	}
+
 	if (options.enabled || series._hasPointLabels) {
 
 		// Process default alignment of data labels for columns
@@ -199,6 +226,10 @@ Series.prototype.drawDataLabels = function () {
 				pointOptions && pointOptions.enabled,
 				generalOptions.enabled
 			) && !point.isNull; // #2282, #4641, #7112
+
+			if (enabled) {
+				enabled = applyFilter(point, pointOptions || options) === true;
+			}
 
 			if (enabled) {
 				// Create individual options structure that can be extended
@@ -323,7 +354,7 @@ Series.prototype.alignDataLabel = function (
 ) {
 	var chart = this.chart,
 		inverted = chart.inverted,
-		plotX = pick(point.plotX, -9999),
+		plotX = pick(point.dlBox && point.dlBox.centerX, point.plotX, -9999),
 		plotY = pick(point.plotY, -9999),
 		bBox = dataLabel.getBBox(),
 		fontSize,
