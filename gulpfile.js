@@ -6,6 +6,7 @@
 const colors = require('colors');
 const gulp = require('gulp');
 const argv = require('yargs').argv;
+const minify = require('html-minifier').minify;
 
 /**
  * Get the product version from build.properties.
@@ -1004,7 +1005,7 @@ const generateAPIDocs = ({ treeFile, output, onlyBuildCurrent }) => {
             }
         }));
     })
-    .then(() => generateAPI(treeFile, output, onlyBuildCurrent));
+    // .then(() => generateAPI(treeFile, output, onlyBuildCurrent));
     // .then(() => copyAPIFiles(output, version));
 };
 

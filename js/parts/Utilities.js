@@ -519,12 +519,12 @@ H.pInt = function (s, mag) {
 };
 
 /**
- * Utility function to check for string type.
+ * 检查是否是字符串类型
  *
  * @function #isString
  * @memberOf Highcharts
- * @param {Object} s - The item to check.
- * @returns {Boolean} - True if the argument is a string.
+ * @param {Object} s - 需要检查的对象
+ * @returns {Boolean} - 当对象是字符串是返回 True
  */
 H.isString = function (s) {
 	return typeof s === 'string';

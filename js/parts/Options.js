@@ -25,26 +25,23 @@ H.defaultOptions = {
 	/*= if (build.classic) { =*/
 
 	/**
-	 * An array containing the default colors for the chart's series. When
-	 * all colors are used, new colors are pulled from the start again.
+	 * Highcharts 数据列的默认颜色数组，数据列会依次从这个数组中取颜色（即图表的第 n 个数据列的颜色是该数组的第 n 个值）；
+	 * 当数据列的数量超过颜色数组的长度，后续的数据列将会重复调用该数组里的值。
 	 * 
 	 * Default colors can also be set on a series or series.type basis,
 	 * see [column.colors](#plotOptions.column.colors), [pie.colors](#plotOptions.
 	 * pie.colors).
 	 * 
-	 * In styled mode, the colors option doesn't exist. Instead, colors
-	 * are defined in CSS and applied either through series or point class
-	 * names, or through the [chart.colorCount](#chart.colorCount) option.
+	 * 在样式模式中，colors 配置无效，取而代之的是在 CSS 中对数据列或数据点控制，还可以是通过 [chart.colorCount](#chart.colorCount) 来设置。
 	 * 
+	 * ### 历史版本中的配置
 	 * 
-	 * ### Legacy
-	 * 
-	 * In Highcharts 3.x, the default colors were:
+	 * 在 Highcharts 3.x 中，默认的配色方案是：
 	 * 
 	 * <pre>colors: ['#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce', 
 	 *     '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a']</pre> 
 	 * 
-	 * In Highcharts 2.x, the default colors were:
+	 * 在 Highcharts 2.x 中，默认的配色方案是：
 	 * 
 	 * <pre>colors: ['#4572A7', '#AA4643', '#89A54E', '#80699B', '#3D96AE', 
 	 *    '#DB843D', '#92A8CD', '#A47D7C', '#B5CA92']</pre>
@@ -76,8 +73,7 @@ H.defaultOptions = {
 	lang: {
 
 		/**
-		 * The loading text that appears when the chart is set into the loading
-		 * state following a call to `chart.showLoading`.
+		 * 图表在加载中（通过 `chart.showLoading` ）状态是显示的文字
 		 * 
 		 * @type {String}
 		 * @default Loading...
@@ -85,8 +81,7 @@ H.defaultOptions = {
 		loading: 'Loading...',
 
 		/**
-		 * An array containing the months names. Corresponds to the `%B` format
-		 * in `Highcharts.dateFormat()`.
+		 * 月份名字数组，对应的会用于时间格式化函数（`Highcharts.dateFormat()）中的格式化字符 `%B`
 		 * 
 		 * @type {Array<String>}
 		 * @default [ "January" , "February" , "March" , "April" , "May" ,
@@ -99,8 +94,7 @@ H.defaultOptions = {
 		],
 
 		/**
-		 * An array containing the months names in abbreviated form. Corresponds
-		 * to the `%b` format in `Highcharts.dateFormat()`.
+		 * 月份名字简写数组，对应的会用于时间格式化函数（`Highcharts.dateFormat()）中的格式化字符 `%b`
 		 * 
 		 * @type {Array<String>}
 		 * @default [ "Jan" , "Feb" , "Mar" , "Apr" , "May" , "Jun" ,
@@ -112,7 +106,7 @@ H.defaultOptions = {
 		],
 
 		/**
-		 * An array containing the weekday names.
+		 * 星期文字数组
 		 * 
 		 * @type {Array<String>}
 		 * @default ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
@@ -124,8 +118,7 @@ H.defaultOptions = {
 		],
 
 		/**
-		 * Short week days, starting Sunday. If not specified, Highcharts uses
-		 * the first three letters of the `lang.weekdays` option.
+		 * 简写的星期文字数组，默认值是 `lang.weekdays` 数组项的前三个字母。
 		 * 
 		 * @type {Array<String>}
 		 * @sample highcharts/lang/shortweekdays/
@@ -135,8 +128,7 @@ H.defaultOptions = {
 		 */
 		
 		/**
-		 * What to show in a date field for invalid dates. Defaults to an empty
-		 * string.
+		 * 无效的日期显示的内容，默认是空字符串。
 		 * 
 		 * @type {String}
 		 * @since 4.1.8
@@ -145,8 +137,7 @@ H.defaultOptions = {
 		 */
 
 		/**
-		 * The default decimal point used in the `Highcharts.numberFormat`
-		 * method unless otherwise specified in the function arguments.
+		 * 数值格式化函数（`Highcharts.numberFormat`）默认的小数点号。
 		 * 
 		 * @type {String}
 		 * @default .
@@ -202,13 +193,10 @@ H.defaultOptions = {
 		resetZoomTitle: 'Reset zoom level 1:1',
 
 		/**
-		 * The default thousands separator used in the `Highcharts.numberFormat`
-		 * method unless otherwise specified in the function arguments. Since
-		 * Highcharts 4.1 it defaults to a single space character, which is
-		 * compatible with ISO and works across Anglo-American and continental
-		 * European languages.
+		 * 数值格式化函数 `Highcharts.numberFormat` 中的千分号默认值（另外可以在该函数中指定千分号值）。
+		 * 从 4.1 开始默认是一个英文空格（符合 ISO 国际标准并可以在 英美、欧洲各国通用），4.1 之前默认值是英文逗号。
 		 * 
-		 * The default is a single space.
+		 * 对于中文用户，英文逗号目前更符合大多数人的习惯，所以建议将此配置设置为英文逗号。
 		 * 
 		 * @type {String}
 		 * @default  
@@ -397,15 +385,14 @@ H.defaultOptions = {
 		 */
 		
 		/**
-		 * A CSS class name to apply to the charts container `div`, allowing
-		 * unique CSS styling for each chart.
+		 * 应用于图表容器 div 的 CSS 类名，用于每个图表使用单独的 CSS 样式。
 		 * 
 		 * @type {String}
 		 * @apioption chart.className
 		 */
 		
 		/**
-		 * Event listeners for the chart.
+		 * 图表相关的事件
 		 * 
 		 * @apioption chart.events
 		 */
@@ -1260,15 +1247,14 @@ H.defaultOptions = {
 	},
 
 	/**
-	 * The chart's main title.
+	 * 图表标题。
 	 * 
 	 * @sample {highmaps} maps/title/title/ Title options demonstrated
 	 */
 	title: {
 
 		/**
-		 * The title of the chart. To disable the title, set the `text` to
-		 * `null`.
+		 * 图表标题的文字。 若不想显示标题，可设置为 `null`。
 		 * 
 		 * @type {String}
 		 * @sample {highcharts} highcharts/title/text/ Custom title
@@ -1279,8 +1265,7 @@ H.defaultOptions = {
 		text: 'Chart title',
 
 		/**
-		 * The horizontal alignment of the title. Can be one of "left", "center"
-		 * and "right".
+		 * 水平对齐方式，可用的值有： "left"、"center"、"right"，分别表示 居左、居中和居右对齐。
 		 * 
 		 * @validvalue ["left", "center", "right"]
 		 * @type {String}
@@ -1292,8 +1277,7 @@ H.defaultOptions = {
 		align: 'center',
 
 		/**
-		 * The margin between the title and the plot area, or if a subtitle
-		 * is present, the margin between the subtitle and the plot area.
+		 * 标题与绘图区之间的间距，当配置了副标题，则是副标题与绘图区之间的间距。
 		 * 
 		 * @type {Number}
 		 * @sample {highcharts} highcharts/title/margin-50/ A chart title margin of 50
@@ -1305,8 +1289,7 @@ H.defaultOptions = {
 		margin: 15,
 
 		/**
-		 * Adjustment made to the title width, normally to reserve space for
-		 * the exporting burger menu.
+		 * 标题宽度调整值，一般是用于给导出按钮留空间（导出按钮和标题是处于同一水平线）。
 		 * 
 		 * @type {Number}
 		 * @sample {highcharts} highcharts/title/widthadjust/ Wider menu, greater padding
@@ -1318,8 +1301,7 @@ H.defaultOptions = {
 		widthAdjust: -44
 
 		/**
-		 * When the title is floating, the plot area will not move to make space
-		 * for it.
+		 * 是否浮动，当标题处于浮动时，标题将不占用图表空间，可以定位在图表的任意位置。
 		 * 
 		 * @type {Boolean}
 		 * @sample {highcharts} highcharts/chart/zoomtype-none/ False by default

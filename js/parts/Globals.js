@@ -35,9 +35,8 @@ var Highcharts = win.Highcharts ? win.Highcharts.error(16, true) : {
 		return undefined;
 	},
 	/**
-	 * An array containing the current chart objects in the page. A chart's
-	 * position in the array is preserved throughout the page's lifetime. When
-	 * a chart is destroyed, the array item becomes `undefined`.
+	 * 包含当前页面图表对象的数组。
+	 * 图表对象的顺序贯穿整个页面的生命周期，当某个图表对象被销毁后，该数组中对应的数组想就变为 `undefined`
 	 * @type {Array.<Highcharts.Chart>}
 	 * @memberOf Highcharts
 	 */
