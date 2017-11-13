@@ -14,6 +14,7 @@ var exec = require('child_process').execSync;
 var logger = require('jsdoc/util/logger');
 var Doclet = require('jsdoc/doclet.js').Doclet;
 var fs = require('fs');
+
 var proc = require(hcRoot + '/assembler/process.js');
 var options = {
     _meta: {
@@ -22,6 +23,7 @@ var options = {
     }
 };
 
+console.log(hcRoot);
 
 function getLocation(option) {
     return {
@@ -170,11 +172,9 @@ function nodeVisitor(node, e, parser, currentSourceName) {
 
     if (node.leadingComments && node.leadingComments.length > 0) {
 
-<<<<<<< HEAD
-        comment = node.leadingComments[0].raw;
-=======
+
         comment = node.leadingComments[0].raw || node.leadingComments[0].value;
->>>>>>> upstream/master
+
 
         if(!comment) {
             return;
