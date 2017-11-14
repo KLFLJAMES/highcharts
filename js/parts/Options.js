@@ -2991,15 +2991,14 @@ function setTimeMethods() {
 }
 
 /**
- * Merge the default options with custom options and return the new options
- * structure. Commonly used for defining reusable templates.
- *
+ * 设置配置，该函数会将传递进来的配置与默认配置进行合并，并返回新的配置对象。一般用于定义可复用的配置模板（即全局配置）
+ * 
  * @function #setOptions
  * @memberOf  Highcharts
  * @sample highcharts/global/useutc-false Setting a global option
  * @sample highcharts/members/setoptions Applying a global theme
- * @param {Object} options The new custom chart options.
- * @returns {Object} Updated options.
+ * @param {Object} options 新的图表配置对象。
+ * @returns {Object} 合并后的图表配置对象。
  */
 H.setOptions = function (options) {
 	

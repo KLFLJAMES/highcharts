@@ -647,10 +647,10 @@ H.defined = function (obj) {
  *
  * @function #attr
  * @memberOf Highcharts
- * @param {Object} elem - The DOM element to receive the attribute(s).
- * @param {String|Object} [prop] - The property or an object of key-value pairs.
- * @param {String} [value] - The value if a single property is set.
- * @returns {*} When used as a getter, return the value.
+ * @param {Object} elem - 需要获取或设置属性的 DOM
+ * @param {String|Object} [prop] - 属性或键值对形式的属性值。
+ * @param {String} [value] - 属性对应的值（prop 为单个属性的时候有效）
+ * @returns {*} 当用于获取属性值时，返回对应的属性值。
  */
 H.attr = function (elem, prop, value) {
 	var ret;
@@ -1249,8 +1249,8 @@ H.stableSort = function (arr, sortFunction) {
  *
  * @function #arrayMin
  * @memberOf  Highcharts
- * @param {Array} data An array of numbers.
- * @returns {Number} The lowest number.
+ * @param {Array} data 数值数组。
+ * @returns {Number} 数组中的最小值。
  */
 H.arrayMin = function (data) {
 	var i = data.length,
@@ -1273,8 +1273,8 @@ H.arrayMin = function (data) {
  *
  * @function #arrayMax
  * @memberOf  Highcharts
- * @param {Array} data - An array of numbers.
- * @returns {Number} The highest number.
+ * @param {Array} data - 数值数组。
+ * @returns {Number} 数组中最大值。
  */
 H.arrayMax = function (data) {
 	var i = data.length,
@@ -1319,7 +1319,7 @@ H.destroyObjectProperties = function (obj, except) {
  *
  * @function #discardElement
  * @memberOf Highcharts
- * @param {HTMLDOMElement} element - The HTML node to discard.
+ * @param {HTMLDOMElement} element - 需要删除的 DOM
  * 
  */
 H.discardElement = function (element) {
@@ -1557,15 +1557,13 @@ H.grep = function (arr, callback) {
 };
 
 /**
- * 查找，返回数组中第一个满足条件函数的元素
+ * 查找，返回数组中满足条件函数的第一个元素
  *
  * @function #find
  * @memberOf Highcharts
  * @param {Array} arr - 目标数组.
- * @param {Function} callback - 条件函数， The function receives the
- *        item as the first argument. Return `true` if this item satisfies the
- *        condition.
- * @returns {Mixed} - The value of the element.
+ * @param {Function} callback - 条件函数， 该函数的第一个参数是数组的元素，当返回 `true` 表示满足条件。
+ * @returns {Mixed} - 满足条件的内容。
  */
 H.find = Array.prototype.find ?
 	function (arr, callback) {
@@ -1638,7 +1636,7 @@ H.reduce = function (arr, func, initialValue) {
 };
 
 /**
- * Get the element's offset position, corrected for `overflow: auto`.
+ * 获取元素的偏移位置， 可以修正 `overflow: auto`
  *
  * @function #offset
  * @memberOf Highcharts
@@ -1693,11 +1691,11 @@ H.stop = function (el, prop) {
  *
  * @function #each
  * @memberOf Highcharts
- * @param {Array} arr - The array to iterate over.
- * @param {Function} fn - The iterator callback. It passes three arguments:
- * * item - The array item.
- * * index - The item's index in the array.
- * * arr - The array that each is being applied to.
+ * @param {Array} arr - 需要遍历的数组
+ * @param {Function} fn - 遍历函数，函数中传递如下几个参数：
+ * * item - 数组项
+ * * index - 下标
+ * * arr - 当前数组
  * @param {Object} [ctx] The context.
  */
 H.each = function (arr, fn, ctx) { // modern browsers
@@ -1709,11 +1707,11 @@ H.each = function (arr, fn, ctx) { // modern browsers
  *
  * @function #objectEach
  * @memberOf Highcharts
- * @param  {Object}   obj - The object to iterate over.
- * @param  {Function} fn  - The iterator callback. It passes three arguments:
- * * value - The property value.
- * * key - The property key.
- * * obj - The object that objectEach is being applied to.
+ * @param  {Object}   obj - 需要遍历的对象。
+ * @param  {Function} fn  - 遍历函数，函数中传递如下几个参数：
+ * * value - 属性值
+ * * key - 属性 key
+ * * obj - 当前对象
  * @param  {Object}   ctx The context
  */
 H.objectEach = function (obj, fn, ctx) {
@@ -1766,7 +1764,7 @@ H.addEvent = function (el, type, fn) {
  * @param {String} [type] - 需要删除的事件类型，如果值是 undefined，则会把该 DOM 上的所有事件都删除
  * @param {Function} [fn] - The specific callback to remove. If undefined, all
  *        events that match the element and optionally the type are removed.
- * 
+ *  
  */
 H.removeEvent = function (el, type, fn) {
 	
@@ -1835,13 +1833,11 @@ H.removeEvent = function (el, type, fn) {
  *
  * @function #fireEvent
  * @memberOf Highcharts
- * @param {Object} el - The object to fire the event on. It can be a
- *        {@link HTMLDOMElement}, an {@link SVGElement} or any other object.
- * @param {String} type - The type of event.
- * @param {Object} [eventArguments] - Custom event arguments that are passed on
- *        as an argument to the event handler.
- * @param {Function} [defaultFunction] - The default function to execute if the 
- *        other listeners haven't returned false.
+ * @param {Object} el - 触发事件的对象（DOM），可以是
+ *        {@link HTMLDOMElement}、 {@link SVGElement} 或其他类型的 DOM。
+ * @param {String} type - 事件类型。
+ * @param {Object} [eventArguments] - 自定义的事件参数，会传递给事件处理函数
+ * @param {Function} [defaultFunction] - 默认的事件响应函数（注意在其他事件监听器返回 false 时不再执行）
  * 
  */
 H.fireEvent = function (el, type, eventArguments, defaultFunction) {
@@ -1994,16 +1990,14 @@ H.animate = function (el, params, opt) {
 };
 
 /**
- * Factory to create new series prototypes.
+ * 创建新数据列类型的工厂方法
  *
  * @function #seriesType
  * @memberOf Highcharts
  *
- * @param {String} type - The series type name.
- * @param {String} parent - The parent series type name. Use `line` to inherit
- *        from the basic {@link Series} object.
- * @param {Object} options - The additional default options that is merged with
- *        the parent's options.
+ * @param {String} type - 数据列名字
+ * @param {String} parent - 需要继承的数据类类型名字。可以使用 `line` 来继承基础数据列类型（ {@link Series} ）。
+ * @param {Object} options - 新的配置，会和父级的数据列中的配置进行合并操作。
  * @param {Object} props - The properties (functions and primitives) to set on
  *        the new prototype.
  * @param {Object} [pointProps] - Members for a series-specific extension of the
@@ -2037,12 +2031,10 @@ H.seriesType = function (type, parent, options, props, pointProps) {
 };
 
 /**
- * Get a unique key for using in internal element id's and pointers. The key
- * is composed of a random hash specific to this Highcharts instance, and a 
- * counter.
+ * 获取唯一的字符串，用于内部元素的 id 或指针赋值。该字符串的形式是 ‘highhcarts-’ + 随机 Hash 值（7位） + 计数
  * @function #uniqueKey
  * @memberOf Highcharts
- * @return {string} The key.
+ * @return {string} 字符串
  * @example
  * var id = H.uniqueKey(); // => 'highcharts-x45f6hp-0'
  */

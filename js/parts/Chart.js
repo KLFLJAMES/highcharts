@@ -71,21 +71,19 @@ var Chart = H.Chart = function () {
 };
 
 /**
- * Factory function for basic charts. 
+ * Highcharts 图表的初始化函数
  *
  * @function #chart
  * @memberOf Highcharts
- * @param  {String|HTMLDOMElement} renderTo - The DOM element to render to, or
- * its id.
- * @param  {Options} options - The chart options structure.
- * @param  {Function} [callback] - Function to run when the chart has loaded and
- * and all external images are loaded. Defining a {@link
+ * @param  {String|HTMLDOMElement} renderTo - 图表渲染容器的 DOM，或者是 DOM 的 id 值
+ * @param  {Options} options - 图表配置。
+ * @param  {Function} [callback] - 图表回调函数。在图表加载完且图表内部的所有图片资源加载完毕后执行。定义在 {@link
  * https://api.highcharts.com/highcharts/chart.events.load|chart.event.load}
- * handler is equivalent.
- * @return {Highcharts.Chart} - Returns the Chart object.
+ * 中的回调函数与这个参数的作用是等同的。
+ * @return {Highcharts.Chart} - 返回图表对象。
  *
  * @example
- * // Render a chart in to div#container
+ * // 将图表渲染在 div#container 中
  * var chart = Highcharts.chart('container', {
  *     title: {
  *         text: 'My chart'
