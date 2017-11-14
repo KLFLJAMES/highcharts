@@ -1734,9 +1734,23 @@ H.objectEach = function (obj, fn, ctx) {
  * @returns {Function} 用于删除事件的回调函数
  */
 H.addEvent = function (el, type, fn) {
-	
-	var events = el.hcEvents = el.hcEvents || {},
+
+	var events,
+		itemEvents,
 		addEventListener = el.addEventListener || H.addEventListenerPolyfill;
+
+	// If events are previously set directly on the prototype, pick them up 
+	// and copy them over to the instance. Otherwise instance handlers would
+	// be set on the prototype and apply to multiple charts in the page.
+	if (el.hcEvents && !el.hasOwnProperty('hcEvents')) {
+		itemEvents = {};
+		H.objectEach(el.hcEvents, function (handlers, eventType) {
+			itemEvents[eventType] = handlers.slice(0);
+		});
+		el.hcEvents = itemEvents;
+	}
+
+	events = el.hcEvents = el.hcEvents || {};
 
 	// Handle DOM events
 	if (addEventListener) {
