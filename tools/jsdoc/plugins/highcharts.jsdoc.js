@@ -550,6 +550,8 @@ exports.handlers = {
         options._meta.branch = exec('git rev-parse --abbrev-ref HEAD', {cwd: process.cwd()}).toString().trim();
         options._meta.date = (new Date()).toString();
 
+        console.log(options);
+
         dumpOptions();
     }
 };

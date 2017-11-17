@@ -9,7 +9,8 @@ const argv = require('yargs').argv;
 const minify = require('html-minifier').minify;
 
 /**
- * Get the product version from build.properties.
+ * Get the product version from 
+ * .
  * The product version is used in license headers and in package names.
  * @return {string|null} Returns version number or null if not found.
  */
@@ -1071,7 +1072,7 @@ const generateAPIDocs = ({ treeFile, output, onlyBuildCurrent }) => {
             }
         }));
     })
-    // .then(() => generateAPI(treeFile, output, onlyBuildCurrent));
+    .then(() => generateAPI(treeFile, output, onlyBuildCurrent))
     // .then(() => copyAPIFiles(output, version));
 };
 
