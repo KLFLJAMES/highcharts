@@ -89,9 +89,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 	 */
 	defaultOptions: {
 		/**
-		 * Whether to allow decimals in this axis' ticks. When counting
-		 * integers, like persons or hits on a web page, decimals should
-		 * be avoided in the labels.
+		 * 是否允许在坐标轴刻度有小数。当图表展示的数据和整数相关时（例如访问量，人数等），坐标轴标签是不能显示小数的（小数无意思）
 		 *
 		 * @type      {Boolean}
 		 * @see       [minTickInterval](#xAxis.minTickInterval)
@@ -1781,7 +1779,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 	},
 
 	/**
-	 * Overrideable function to initialize the axis. 
+	 * 坐标轴初始化函数
 	 *
 	 * @see {@link Axis}
 	 */
@@ -1802,7 +1800,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 		axis.chart = chart;
 		
 		/**
-		 * 当前坐标轴是否是水平轴
+		 * 是否是水平轴
 		 *
 		 * @name     horiz
 		 * @memberOf Axis
@@ -1814,7 +1812,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 		axis.isXAxis = isXAxis;
 
 		/**
-		 * 当前坐标做所属的类型集合，可以是 `xAxis`, `yAxis` 或 `colorAxis`。Corresponds to properties on Chart, for example
+		 * 当前坐标做所属的类型集合，可以是 `xAxis`, `yAxis` 或 `colorAxis`。
 		 * {@link Chart.xAxis}.
 		 *
 		 * @name     coll
@@ -1827,8 +1825,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 		axis.opposite = userOptions.opposite; // needed in setOptions
 
 		/**
-		 * The side on which the axis is rendered. 0 is top, 1 is right, 2 is
-		 * bottom and 3 is left.
+		 * 坐标轴在图表中所在方位， 0  为顶部，1 为右侧，2 为下方， 3 是左侧。
 		 *
 		 * @name     side
 		 * @memberOf Axis
@@ -1856,8 +1853,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 
 
 		/**
-		 * Whether the axis is reversed. Based on the `axis.reversed`,
-		 * option, but inverted charts have reversed xAxis by default.
+		 * 坐标轴是否反转。其值是通过 `axis.reversed` 配置来生效的。 but inverted charts have reversed xAxis by default.
 		 *
 		 * @name     reversed
 		 * @memberOf Axis
@@ -1931,7 +1927,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 
 
 		/**
-		 * The processed crosshair options.
+		 * 处理后的十字线配置
 		 *
 		 * @name     crosshair
 		 * @memberOf Axis
@@ -1957,7 +1953,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 		}
 
 		/**
-		 * All series associated to the axis.
+		 *  坐标轴关联的所有数据列数组。
 		 *
 		 * @name     series
 		 * @memberOf Axis

@@ -137,24 +137,6 @@
 
     });
     */
-    /*
-    QUnit.test('IsNumber', function (assert) {
-        // test with undefined
-        assertEquals(assert, "IsNumber undefined", false, isNumber(undefined));
-
-        // test with null
-        assertEquals(assert, "IsNumber null", false, isNumber(null));
-
-        // test with number
-        assertEquals(assert, "IsNumber number", true, isNumber(15));
-
-        // test with string
-        assertEquals(assert, "IsNumber string", false, isNumber("this is a string"));
-
-        // test with object
-        assertEquals(assert, "IsNumber object", false, isNumber({}));
-    });
-    */
     QUnit.test('Splat', function (assert) {
 
         // test with undefined
@@ -275,6 +257,13 @@
         assertEquals(assert, 'Exponential', "3,20e+22", numberFormat(32000000000000000000000, 2, ','));
         assertEquals(assert, 'Exponential', "3e+22", numberFormat(30000000000000000000000, 0));
         assertEquals(assert, 'Exponential', "1.5e+36", numberFormat(1.5e+36, -1));
+
+        assertEquals(
+            assert,
+            'Decimals limit with exponential (#7042)',
+            "0.00",
+            numberFormat(1.5e-9, 2)
+        );
     });
 
 
@@ -565,6 +554,16 @@
             isNumber(-1.123),
             true,
             'negative number with decimals (-1.123) returns true'
+        );
+        assert.strictEqual(
+            isNumber(Infinity),
+            false,
+            'Infinity is not a finite number'
+        );
+        assert.strictEqual(
+            isNumber(-Infinity),
+            false,
+            '-Infinity is not a finite number'
         );
     });
 

@@ -458,9 +458,9 @@ H.extend = function (a, b) {
  * @function #merge
  * @memberOf Highcharts
  * @param {Boolean} [extend] - Whether to extend the left-side object (a) or
-          return a whole new object.
+		  return a whole new object.
  * @param {Object} a - The first object to extend. When only this is given, the
-          function returns a deep copy.
+		  function returns a deep copy.
  * @param {...Object} [n] - An object to merge into the previous one.
  * @returns {Object} - The merged object. If the first argument is true, the 
  * return is the same as the second argument.
@@ -485,7 +485,7 @@ H.merge = function () {
 						!H.isDOMElement(value)
 				) {
 					copy[key] = doCopy(copy[key] || {}, value);
-          
+
 				// Primitives and arrays are copied over directly
 				} else {
 					copy[key] = original[key];
@@ -597,17 +597,24 @@ H.isClass = function (obj) {
 };
 
 /**
+<<<<<<< HEAD
  * 数值判定
  * 
  * Utility function to check if an item is of type number.
+=======
+ * Utility function to check if an item is a number and it is finite (not NaN,
+ * Infinity or -Infinity).
+>>>>>>> upstream/master
  *
  * @function #isNumber
  * @memberOf Highcharts
- * @param {Object} n - The item to check.
- * @returns {Boolean} - True if the item is a number and is not NaN.
+ * @param  {Object} n
+ *         The item to check.
+ * @return {Boolean}
+ *         True if the item is a finite number
  */
 H.isNumber = function (n) {
-	return typeof n === 'number' && !isNaN(n);
+	return typeof n === 'number' && !isNaN(n) && n < Infinity && n > -Infinity;
 };
 
 /**
@@ -1432,6 +1439,10 @@ H.numberFormat = function (number, decimals, decimalPoint, thousandsSep) {
 		decimals = Math.min(origDec, 20);
 	} else if (!H.isNumber(decimals)) {
 		decimals = 2;
+	} else if (decimals && exponent[1] && origDec - exponent[1] > decimals) {
+		// Expose decimals from exponential notation (#7042)
+		exponent[0] *= Math.pow(10, exponent[1] - decimals);
+		exponent[1] = decimals;
 	}
 
 	// Add another decimal to avoid rounding errors of float numbers. (#4573)
@@ -1469,7 +1480,7 @@ H.numberFormat = function (number, decimals, decimalPoint, thousandsSep) {
 		ret += decimalPoint + roundedNumber.slice(-decimals);
 	}
 
-	if (exponent[1]) {
+	if (exponent[1] && +ret !== 0) {
 		ret += 'e' + exponent[1];
 	}
 
