@@ -63,8 +63,20 @@ seriesType('flags', 'column', {
 	 * @product highstock
 	 * @apioption plotOptions.flags.onSeries
 	 */
-
+	
 	pointRange: 0, // #673
+
+	/**
+	 * Whether the flags are allowed to overlap sideways. If `false`, the flags
+	 * are moved sideways using an algorithm that seeks to place every flag as
+	 * close as possible to its original position.
+	 *
+	 * @sample {highstock} stock/plotoptions/flags-allowoverlapx
+	 *         Allow sideways overlap
+	 *
+	 * @since 6.0.4
+	 */
+	allowOverlapX: false,
 
 	/**
 	 * The shape of the marker. Can be one of "flag", "circlepin", "squarepin",
@@ -123,7 +135,7 @@ seriesType('flags', 'column', {
 	 *  or individually for each point. Defaults to `"A"`.
 	 * 
 	 * @type {String}
-	 * @default "A"
+	 * @default A
 	 * @product highstock
 	 * @apioption plotOptions.flags.title
 	 */
@@ -191,8 +203,6 @@ seriesType('flags', 'column', {
 			/**
 			 * The color of the line/border of the flag.
 			 * 
-			 * @type {String}
-			 * @default "black"
 			 * @product highstock
 			 */
 			lineColor: '${palette.neutralColor100}',
@@ -200,8 +210,6 @@ seriesType('flags', 'column', {
 			/**
 			 * The fill or background color of the flag.
 			 * 
-			 * @type {String}
-			 * @default "#FCFFC5"
 			 * @product highstock
 			 */
 			fillColor: '${palette.highlightColor20}'
@@ -281,6 +289,7 @@ seriesType('flags', 'column', {
 			graphic,
 			stackIndex,
 			anchorY,
+			attribs,
 			outsideRight,
 			yAxis = series.yAxis,
 			boxesMap = {},
@@ -346,26 +355,33 @@ seriesType('flags', 'column', {
 				}
 
 				// Plant the flag
-				graphic.attr({
-					text: point.options.title || options.title || 'A'
-				})[graphic.isNew ? 'attr' : 'animate']({
+				attribs = {
 					y: plotY,
 					anchorY: anchorY
-				});
+				};
+				if (options.allowOverlapX) {
+					attribs.x = plotX;
+					attribs.anchorX = point.anchorX;
+				}
+				graphic.attr({
+					text: point.options.title || options.title || 'A'
+				})[graphic.isNew ? 'attr' : 'animate'](attribs);
 
 				// Rig for the distribute function
-				if (!boxesMap[point.plotX]) {
-					boxesMap[point.plotX] = {
-						align: 0,
-						size: graphic.width,
-						target: plotX,
-						anchorX: plotX
-					};
-				} else {
-					boxesMap[point.plotX].size = Math.max(
-						boxesMap[point.plotX].size,
-						graphic.width
-					);
+				if (!options.allowOverlapX) {
+					if (!boxesMap[point.plotX]) {
+						boxesMap[point.plotX] = {
+							align: 0,
+							size: graphic.width,
+							target: plotX,
+							anchorX: plotX
+						};
+					} else {
+						boxesMap[point.plotX].size = Math.max(
+							boxesMap[point.plotX].size,
+							graphic.width
+						);
+					}
 				}
 
 				// Set the tooltip anchor position
@@ -379,23 +395,26 @@ seriesType('flags', 'column', {
 
 		}
 		
-		H.objectEach(boxesMap, function (box) {
-			box.plotX = box.anchorX;
-			boxes.push(box);
-		});
+		// Handle X-dimension overlapping
+		if (!options.allowOverlapX) {
+			H.objectEach(boxesMap, function (box) {
+				box.plotX = box.anchorX;
+				boxes.push(box);
+			});
 
-		H.distribute(boxes, this.xAxis.len);
+			H.distribute(boxes, this.xAxis.len);
 
-		each(points, function (point) {
-			var box = point.graphic && boxesMap[point.plotX];
-			if (box) {
-				point.graphic[point.graphic.isNew ? 'attr' : 'animate']({
-					x: box.pos,
-					anchorX: point.anchorX
-				});
-				point.graphic.isNew = false;
-			}
-		});
+			each(points, function (point) {
+				var box = point.graphic && boxesMap[point.plotX];
+				if (box) {
+					point.graphic[point.graphic.isNew ? 'attr' : 'animate']({
+						x: box.pos,
+						anchorX: point.anchorX
+					});
+					point.graphic.isNew = false;
+				}
+			});
+		}
 
 		// Might be a mix of SVG and HTML and we need events for both (#6303)
 		if (options.useHTML) {
@@ -471,8 +490,10 @@ symbols.flag = function (x, y, w, h, options) {
 	);
 };
 
-// create the circlepin and squarepin icons with anchor
-each(['circle', 'square'], function (shape) {
+/*
+ * Create the circlepin and squarepin icons with anchor
+ */
+function createPinSymbol(shape) {
 	symbols[shape + 'pin'] = function (x, y, w, h, options) {
 
 		var anchorX = options && options.anchorX,
@@ -507,7 +528,9 @@ each(['circle', 'square'], function (shape) {
 
 		return path;
 	};
-});
+}
+createPinSymbol('circle');
+createPinSymbol('square');
 
 /*= if (build.classic) { =*/
 // The symbol callbacks are generated on the SVGRenderer object in all browsers. Even

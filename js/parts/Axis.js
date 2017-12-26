@@ -568,6 +568,10 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 			 *             Left
 			 * @sample     {highcharts} highcharts/xaxis/labels-align-right/
 			 *             Right
+			 * @sample     {highcharts}
+			 *             highcharts/xaxis/labels-reservespace-true/
+			 *             Left-aligned labels on a vertical category axis
+			 * @see        [reserveSpace](#xAxis.labels.reserveSpace)
 			 * @apioption  xAxis.labels.align
 			 */
 			// align: 'center',
@@ -697,14 +701,25 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 			 */
 
 			/**
-			 * Whether to reserve space for the labels. This can be turned off
-			 * when for example the labels are rendered inside the plot area
-			 * instead of outside.
+			 * Whether to reserve space for the labels. By default, space is
+			 * reserved for the labels in these cases:
+			 * 
+			 * * On all horizontal axes.
+			 * * On vertical axes if `label.align` is `right` on a left-side
+			 * axis or `left` on a right-side axis.
+			 * * On vertical axes if `label.align` is `center`.
+			 * 
+			 * This can be turned off when for example the labels are rendered
+			 * inside the plot area instead of outside.
 			 *
 			 * @type      {Boolean}
 			 * @sample    {highcharts} highcharts/xaxis/labels-reservespace/
 			 *            No reserved space, labels inside plot
-			 * @default   true
+			 * @sample    {highcharts}
+			 *            highcharts/xaxis/labels-reservespace-true/
+			 *            Left-aligned labels on a vertical category axis
+			 * @see       [labels.align](#xAxis.labels.align)
+			 * @default   null
 			 * @since     4.1.10
 			 * @product   highcharts
 			 * @apioption xAxis.labels.reserveSpace
@@ -1113,6 +1128,18 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 		 *            Y axis on left side
 		 * @default   false
 		 * @apioption xAxis.opposite
+		 */
+
+		/**
+		 * Refers to the index in the [panes](#panes) array. Used for circular
+		 * gauges and polar charts. When the option is not set then first pane
+		 * will be used.
+		 *
+		 * @type      {Number}
+		 * @sample    highcharts/demo/gauge-vu-meter
+		 *            Two gauges with different center
+		 * @product   highcharts
+		 * @apioption xAxis.pane
 		 */
 		
 		/**
@@ -2017,6 +2044,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 	defaultLabelFormatter: function () {
 		var axis = this.axis,
 			value = this.value,
+			time = axis.chart.time,
 			categories = axis.categories,
 			dateTimeLabelFormat = this.dateTimeLabelFormat,
 			lang = defaultOptions.lang,
@@ -2034,13 +2062,13 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 				axis.tickInterval;
 
 		if (formatOption) {
-			ret = format(formatOption, this);
+			ret = format(formatOption, this, time);
 
 		} else if (categories) {
 			ret = value;
 
 		} else if (dateTimeLabelFormat) { // datetime axis
-			ret = H.dateFormat(dateTimeLabelFormat, value);
+			ret = time.dateFormat(dateTimeLabelFormat, value);
 
 		} else if (i && numericSymbolDetector >= 1000) {
 			// Decide whether we should add a numeric symbol like k (thousands)
@@ -2131,16 +2159,19 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 							xData = grep(xData, isNumber);
 							// Do it again with valid data
 							seriesDataMin = arrayMin(xData);
+							seriesDataMax = arrayMax(xData);
 						}
 
-						axis.dataMin = Math.min(
-							pick(axis.dataMin, xData[0], seriesDataMin),
-							seriesDataMin
-						);
-						axis.dataMax = Math.max(
-							pick(axis.dataMax, xData[0], seriesDataMax),
-							seriesDataMax
-						);
+						if (xData.length) {
+							axis.dataMin = Math.min(
+								pick(axis.dataMin, xData[0], seriesDataMin),
+								seriesDataMin
+							);
+							axis.dataMax = Math.max(
+								pick(axis.dataMax, xData[0], seriesDataMax),
+								seriesDataMax
+							);
+						}
 					}
 
 				// Get dataMin and dataMax for Y axes, as well as handle
@@ -2956,10 +2987,10 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 		}
 
 		// Handle options for floor, ceiling, softMin and softMax (#6359)
-		if (isNumber(options.softMin)) {
+		if (isNumber(options.softMin) && !isNumber(axis.userMin)) {
 			axis.min = Math.min(axis.min, options.softMin);
 		}
-		if (isNumber(options.softMax)) {
+		if (isNumber(options.softMax) && !isNumber(axis.userMax)) {
 			axis.max = Math.max(axis.max, options.softMax);
 		}
 		if (isNumber(options.floor)) {
@@ -3247,7 +3278,11 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 			}
 
 			// If no tick are left, set one tick in the middle (#3195)
-			if (tickPositions.length === 0 && defined(roundedMin)) {
+			if (
+				tickPositions.length === 0 &&
+				defined(roundedMin) &&
+				!this.options.tickPositions
+			) {
 				tickPositions.push((roundedMax + roundedMin) / 2);
 			}
 		}
@@ -3348,38 +3383,57 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 			tickAmount = this.tickAmount,
 			finalTickAmt = this.finalTickAmt,
 			currentTickAmount = tickPositions && tickPositions.length,
+			threshold = pick(this.threshold, this.softThreshold ? 0 : null),
 			i,
 			len;
 
-		if (currentTickAmount < tickAmount) {
-			while (tickPositions.length < tickAmount) {
-				tickPositions.push(correctFloat(
-					tickPositions[tickPositions.length - 1] + tickInterval
-				));
-			}
-			this.transA *= (currentTickAmount - 1) / (tickAmount - 1);
-			this.max = tickPositions[tickPositions.length - 1];
+		if (this.hasData()) {
+			if (currentTickAmount < tickAmount) {
+				while (tickPositions.length < tickAmount) {
 
-		// We have too many ticks, run second pass to try to reduce ticks
-		} else if (currentTickAmount > tickAmount) {
-			this.tickInterval *= 2;
-			this.setTickPositions();
-		}
-
-		// The finalTickAmt property is set in getTickAmount
-		if (defined(finalTickAmt)) {
-			i = len = tickPositions.length;
-			while (i--) {
-				if (
-					// Remove every other tick
-					(finalTickAmt === 3 && i % 2 === 1) ||
-					// Remove all but first and last
-					(finalTickAmt <= 2 && i > 0 && i < len - 1)
-				) {
-					tickPositions.splice(i, 1);
+					// Extend evenly for both sides unless we're on the
+					// threshold (#3965)
+					if (
+						tickPositions.length % 2 ||
+						this.min === threshold
+					) {
+						// to the end
+						tickPositions.push(correctFloat(
+							tickPositions[tickPositions.length - 1] +
+							tickInterval
+						));
+					} else {
+						// to the start
+						tickPositions.unshift(correctFloat(
+							tickPositions[0] - tickInterval
+						));
+					}
 				}
+				this.transA *= (currentTickAmount - 1) / (tickAmount - 1);
+				this.min = tickPositions[0];
+				this.max = tickPositions[tickPositions.length - 1];
+
+			// We have too many ticks, run second pass to try to reduce ticks
+			} else if (currentTickAmount > tickAmount) {
+				this.tickInterval *= 2;
+				this.setTickPositions();
 			}
-			this.finalTickAmt = undefined;
+
+			// The finalTickAmt property is set in getTickAmount
+			if (defined(finalTickAmt)) {
+				i = len = tickPositions.length;
+				while (i--) {
+					if (
+						// Remove every other tick
+						(finalTickAmt === 3 && i % 2 === 1) ||
+						// Remove all but first and last
+						(finalTickAmt <= 2 && i > 0 && i < len - 1)
+					) {
+						tickPositions.splice(i, 1);
+					}
+				}
+				this.finalTickAmt = undefined;
+			}
 		}
 	},
 
@@ -4198,14 +4252,15 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 
 			// Left side must be align: right and right side must
 			// have align: left for labels
-			if (
-				labelOptions.reserveSpace !== false &&
-				(
-					side === 0 ||
-					side === 2 ||
-					{ 1: 'left', 3: 'right' }[side] === axis.labelAlign ||
-					axis.labelAlign === 'center'
-				)
+			axis.reserveSpaceDefault = (
+				side === 0 ||
+				side === 2 ||
+				{ 1: 'left', 3: 'right' }[side] === axis.labelAlign
+			);
+			if (pick(
+				labelOptions.reserveSpace,
+				axis.labelAlign === 'center' ? true : null,
+				axis.reserveSpaceDefault)
 			) {
 				each(tickPositions, function (pos) {
 					// get the highest offset
@@ -4218,8 +4273,8 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 
 			if (axis.staggerLines) {
 				labelOffset *= axis.staggerLines;
-				axis.labelOffset = labelOffset * (axis.opposite ? -1 : 1);
 			}
+			axis.labelOffset = labelOffset * (axis.opposite ? -1 : 1);
 
 		} else { // doesn't have data
 			objectEach(ticks, function (tick, n) {

@@ -217,7 +217,6 @@ var arrayMax = H.arrayMax,
 var seriesProto = Series.prototype,
 	baseProcessData = seriesProto.processData,
 	baseGeneratePoints = seriesProto.generatePoints,
-	baseDestroy = seriesProto.destroy,
 
 	/** 
 	 * 
@@ -661,6 +660,7 @@ wrap(Point.prototype, 'update', function (proceed) {
  */
 wrap(Tooltip.prototype, 'tooltipFooterHeaderFormatter', function (proceed, labelConfig, isFooter) {
 	var tooltip = this,
+		time = this.chart.time,
 		series = labelConfig.series,
 		options = series.options,
 		tooltipOptions = series.tooltipOptions,
@@ -668,7 +668,6 @@ wrap(Tooltip.prototype, 'tooltipFooterHeaderFormatter', function (proceed, label
 		xDateFormat = tooltipOptions.xDateFormat,
 		xDateFormatEnd,
 		xAxis = series.xAxis,
-		dateFormat = H.dateFormat,
 		currentDataGrouping,
 		dateTimeLabelFormats,
 		labelFormats,
@@ -698,16 +697,19 @@ wrap(Tooltip.prototype, 'tooltipFooterHeaderFormatter', function (proceed, label
 		}
 
 		// now format the key
-		formattedKey = dateFormat(xDateFormat, labelConfig.key);
+		formattedKey = time.dateFormat(xDateFormat, labelConfig.key);
 		if (xDateFormatEnd) {
-			formattedKey += dateFormat(xDateFormatEnd, labelConfig.key + currentDataGrouping.totalRange - 1);
+			formattedKey += time.dateFormat(
+				xDateFormatEnd,
+				labelConfig.key + currentDataGrouping.totalRange - 1
+			);
 		}
 
 		// return the replaced format
 		return format(tooltipOptions[(isFooter ? 'footer' : 'header') + 'Format'], {
 			point: extend(labelConfig.point, { key: formattedKey }),
 			series: series
-		});
+		}, time);
 	
 	}
 
@@ -716,20 +718,12 @@ wrap(Tooltip.prototype, 'tooltipFooterHeaderFormatter', function (proceed, label
 });
 
 /**
- * Extend the series destroyer
+ * Destroy grouped data on series destroy
  */
-seriesProto.destroy = function () {
-	var series = this,
-		groupedData = series.groupedData || [],
-		i = groupedData.length;
-
-	while (i--) {
-		if (groupedData[i]) {
-			groupedData[i].destroy();
-		}
-	}
-	baseDestroy.apply(series);
-};
+wrap(seriesProto, 'destroy', function (proceed) {
+	this.destroyGroupedData();
+	proceed.call(this);
+});
 
 
 // Handle default options for data grouping. This must be set at runtime because some series types are

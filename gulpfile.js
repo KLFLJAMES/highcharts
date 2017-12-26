@@ -13,7 +13,6 @@ const {
 } = require('highcharts-assembler/src/build.js');
 
 const {
-    createDirectory,
     getFile,
     removeDirectory,
     writeFile
@@ -381,6 +380,7 @@ const generateClassReferences = ({ templateDir, destination }) => {
         './js/parts/Series.js',
         './js/parts/StockChart.js',
         './js/parts/SVGRenderer.js',
+        './js/parts/Time.js',
         './js/parts-map/GeoJSON.js',
         './js/parts-map/Map.js',
         './js/parts-map/MapNavigation.js',
@@ -528,6 +528,9 @@ const copyFile = (source, target) => new Promise((resolve, reject) => {
     const {
         dirname
     } = require('path');
+    const {
+        createDirectory
+    } = require('highcharts-assembler/src/utilities.js');
     const directory = dirname(target);
     createDirectory(directory);
     let read = fs.createReadStream(source);
@@ -997,7 +1000,10 @@ const generateAPI = (input, output, onlyBuildCurrent) => new Promise((resolve, r
             console.log(message.noSeries);
             reject(new Error(message.noSeries));
         }
-        generate(json, output, onlyBuildCurrent, () => {
+        generate(json, output, onlyBuildCurrent, {
+            platform: 'JS',
+            products: { highcharts: true, highstock: true, highmaps: true }
+        }, () => {
             console.log(message.success);
             resolve(message.success);
         });
@@ -1181,9 +1187,13 @@ const uploadFiles = (params) => {
             let filePromise;
             if (isString(from) && isString(to)) {
                 const content = getFile(from);
-                const fileType = from.split('.').pop();
-                filePromise = storage.push(cdn, to, content, mimeType[fileType])
-                    .then(() => isFunction(callback) && callback());
+                if (isString(content)) {
+                    const fileType = from.split('.').pop();
+                    filePromise = storage.push(cdn, to, content, mimeType[fileType])
+                      .then(() => isFunction(callback) && callback());
+                } else {
+                    filePromise = Promise.reject(new Error('Path is not a file: ' + from));
+                }
             } else {
                 filePromise = Promise.reject(
                     new Error([
@@ -1234,7 +1244,7 @@ const uploadAPIDocs = () => {
         const getMapOfFromTo = (fileName) => {
             let to = fileName;
             if (tag !== 'current') {
-                let parts = fileName.split('/');
+                let parts = to.split('/');
                 parts.splice(1, 0, tag);
                 to = parts.join('/');
             }
@@ -1311,9 +1321,9 @@ const startServer = () => {
                 res.writeHead(200, { 'Content-Type': mimes.html });
             } else {
                 file = path.substr(path.lastIndexOf('/') + 1);
-                // console.log(file, mimes[path.substr(ti + 1)], path.substr(ti + 1))
-                // res.setHeader('Content-Type', mimes[path.substr(ti + 1)] || 'text/plain')
-                res.writeHead(200, { 'Content-Type': mimes[path.substr(ti + 1)] || 'text/html'});
+                res.writeHead(200, {
+                    'Content-Type': mimes[path.substr(ti + 1)] || mimes.html
+                });
             }
 
             let ext = file.substr(file.lastIndexOf('.') + 1);
@@ -1421,9 +1431,10 @@ gulp.task('dist', () => {
 
 gulp.task('scripts-new', () => {
     const {
-      join,
-      relative,
-      resolve
+        join,
+        relative,
+        resolve,
+        sep
     } = require('path');
     const {
       getOrderedDependencies
@@ -1483,7 +1494,7 @@ gulp.task('scripts-new', () => {
                   options.exclude :
                   false
                 );
-                const pathFile = join(pathSource, 'masters', filename).split('\\').join('/');
+                const pathFile = join(pathSource, 'masters', filename);
                 const list = getOrderedDependencies(pathFile)
                     .filter((pathModule) => {
                         let result = true;
@@ -1511,7 +1522,7 @@ gulp.task('scripts-new', () => {
             ].join('\n'));
             return buildModules({
                 base: pathJSParts,
-                files: [pathRelative],
+                files: [pathRelative.split(sep).join('/')],
                 output: pathESModules,
                 type: types
             });
@@ -1526,7 +1537,7 @@ gulp.task('scripts-new', () => {
                   .reduce((arr, pathMaster) => {
                       const list = dependencyList[type][pathMaster];
                       if (list.includes(pathFile)) {
-                          arr.push(relative(pathESMasters, pathMaster));
+                          arr.push(relative(pathESMasters, pathMaster).split(sep).join('/'));
                       }
                       return arr;
                   }, []);

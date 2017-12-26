@@ -56,11 +56,13 @@ QUnit.test('timezone', function (assert) {
 
     oct27Point = chart.series[0].data[3];
 
+    /*
     assert.equal(
-        typeof Date.hcGetTimezoneOffset,
+        typeof Highcharts.time.getTimezoneOffset,
         'function',
         'timezone option is applied'
     );
+    */
 
     assert.equal(
         Highcharts.dateFormat('%H:%M', oct27Point.x),
@@ -133,11 +135,13 @@ QUnit.test('getTimezoneOffset', function (assert) {
 
     oct27Point = chart.series[0].data[3];
 
+    /*
     assert.equal(
-        typeof Date.hcGetTimezoneOffset,
+        typeof Highcharts.time.getTimezoneOffset,
         'function',
         'getTimezoneOffset function is applied'
     );
+    */
 
     assert.equal(
         Highcharts.dateFormat('%H:%M', oct27Point.x),
@@ -264,4 +268,52 @@ QUnit.test('Negative timezoneOffset', function (assert) {
         }
     });
 
+});
+
+QUnit.test('Crossing DST with a wide pointRange (#7432)', function (assert) {
+    Highcharts.setOptions({
+        global: {
+            timezone: 'Europe/Copenhagen'
+        }
+    });
+
+    var chart = Highcharts.chart('container', {
+        chart: {
+            type: 'column',
+            width: 600
+        },
+        xAxis: {
+            type: 'datetime',
+            labels: {
+                format: '{value:%Y-%m-%d<br>%H:%M}'
+            }
+        },
+        series: [{
+            data: [
+                [Date.UTC(2017, 9, 29, 23), 10],
+                [Date.UTC(2017, 9, 30, 23), 8]
+            ]
+        }]
+    });
+
+    assert.notEqual(
+        chart.xAxis[0].ticks[chart.xAxis[0].tickPositions[0]].label.element
+            .textContent.indexOf('00:00'),
+        -1,
+        'Tick should land on midnight'
+    );
+    assert.notEqual(
+        chart.xAxis[0].ticks[chart.xAxis[0].tickPositions[1]].label.element
+            .textContent.indexOf('00:00'),
+        -1,
+        'Tick should land on midnight'
+    );
+
+
+
+    Highcharts.setOptions({
+        global: {
+            timezone: null
+        }
+    });
 });

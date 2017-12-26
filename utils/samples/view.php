@@ -22,7 +22,7 @@ $topDomain = $httpHost[sizeof($httpHost) - 1];
 
 // Get HTML and use dev server
 ob_start();
-@include("$path/demo.html");
+@include("$fsPath/demo.html");
 $html = ob_get_clean();
 
 if ($boostCanvas) {
@@ -34,6 +34,11 @@ if ($boostCanvas) {
 		'<script src="https://code.highcharts.com/modules/boost.js"></script>',
 		$html
 	);
+}
+
+$md = false;
+if (is_file("$fsPath/readme.md")) {
+	$md = file_get_contents("$fsPath/readme.md");
 }
 
 $html = str_replace('https://code.highcharts.com/', "http://code.highcharts.$topDomain/", $html);
@@ -54,7 +59,7 @@ if (strstr($html, "/code.highcharts.$topDomain/mapdata")) {
 
 // Get CSS and use dev server
 ob_start();
-@include("$path/demo.css");
+@include("$fsPath/demo.css");
 $css = ob_get_clean();
 $css = str_replace('https://code.highcharts.com/', "http://code.highcharts.$topDomain/", $css);
 
@@ -65,14 +70,23 @@ if ($styled) {
 	$css = "@import 'http://code.highcharts.$topDomain/css/highcharts.css';";
 }
 
+ob_start();
+@include("$fsPath/demo.js");
+$js = ob_get_clean();
+
+
 // Old IE
-/*
+//*
 $html .= "
 <!--[if lt IE 9]>
 <script src='http://code.highcharts.$topDomain/modules/oldie.js'></script>
 <![endif]-->
 ";
 // */
+
+getGraphics($html);
+getGraphics($js);
+getGraphics($css);
 
 
 // Handle themes
@@ -91,11 +105,11 @@ $themes = array(
 
 
 function getResources() {
-    global $path, $styled, $topDomain;
+    global $fsPath, $styled, $topDomain;
 
     // No idea why file_get_contents doesn't work here...
     ob_start();
-    @include("$path/demo.details");
+    @include("$fsPath/demo.details");
     $s = ob_get_clean();
 
     $html = '';
@@ -147,7 +161,7 @@ function getResources() {
 		<script type="text/javascript">
 		/* eslint-disable */
 		var sampleIndex,
-			path = '<?php echo $path ?>'.replace('../../samples/', ''),
+			path = '<?php echo $path ?>',
 			browser = <?php echo json_encode(getBrowser()); ?>,
 			controller = window.parent && window.parent.controller;
 
@@ -498,15 +512,29 @@ function getResources() {
 
 			<?php echo $html ?>
 			</div>
+
+			<?php if ($md) { ?>
+			<div class="description" id="description">
+			</div>
+			<script src="https://cdn.rawgit.com/showdownjs/showdown/1.8.5/dist/showdown.min.js"></script>
+			<script>
+				var converter = new showdown.Converter(),
+    				md = `<?php echo str_replace('`', '\`', $md) ?>`,
+    				html = converter.makeHtml(md);
+				document.getElementById('description').innerHTML = html;
+			</script>
+			
+			<?php } ?>
+
 			<script>
 			setUp();
-			<?php @include("$path/demo.js"); ?>
+			<?php echo $js; ?>
 			</script>
-			<?php if (is_file("$path/test-notes.html")) { ?>
+			<?php if (is_file("$fsPath/test-notes.html")) { ?>
 			<section class="test-notes">
 				<header>Test notes</header>
 				<div class="test-notes-content">
-					<?php include("$path/test-notes.html"); ?>
+					<?php include("$fsPath/test-notes.html"); ?>
 				</div>
 			</section>
 			<?php } else { ?>

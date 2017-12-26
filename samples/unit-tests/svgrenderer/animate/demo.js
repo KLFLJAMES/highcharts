@@ -498,3 +498,63 @@ QUnit.test('Fill and stroke animation for series points in 3D (#6776)', function
     // Reset animation
     lolexRunAndUninstall(clock);
 });
+
+QUnit.test('Complete callback', function (assert) {
+
+    var clock = lolexInstall();
+
+    var ren = new Highcharts.Renderer(
+        document.getElementById('container'),
+        600,
+        400
+    );
+
+    var circle = ren.circle(10, 100, 10)
+        .attr({
+            fill: 'blue'
+        })
+        .add()
+        .animate({
+            x: 500
+        }, {
+            complete: function () {
+                circle.animate(
+                    { y: 300 },
+                    { duration: 50 }
+                );
+
+                assert.strictEqual(
+                    this,
+                    circle,
+                    'The SVGElement should be the context of complete'
+                );
+            },
+            duration: 50
+        });
+
+    setTimeout(function () {
+        assert.strictEqual(
+            circle.element.getAttribute('cy'),
+            '300',
+            'Chained animation has run (#7363)'
+        );
+
+
+        circle.animate({
+            y: 300
+        }, {
+            complete: function () {
+                assert.strictEqual(
+                    this,
+                    circle,
+                    'The SVGElement should be the context of complete when ' +
+                        'skipping animation to equal values (#7146)'
+                );
+            }
+        });
+    }, 150);
+
+    // Run and reset animation
+    lolexRunAndUninstall(clock);
+
+});

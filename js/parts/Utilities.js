@@ -164,9 +164,11 @@ H.Fx.prototype = {
 					setTimeout(step, 13);
 				},
 			step = function () {
-				H.timers = H.grep(H.timers, function (timer) {
-					return timer();
-				});
+				for (var i = 0; i < H.timers.length; i++) {
+					if (!H.timers[i]()) {
+						H.timers.splice(i--, 1);
+					}
+				}
 
 				if (H.timers.length) {
 					requestAnimationFrame(step);
@@ -176,7 +178,7 @@ H.Fx.prototype = {
 		if (from === to) {
 			delete options.curAnim[this.prop];
 			if (options.complete && H.keys(options.curAnim).length === 0) {
-				options.complete();
+				options.complete.call(this.elem);
 			}
 		} else { // #7166
 			this.startTime = +new Date();
@@ -427,6 +429,7 @@ H.Fx.prototype.strokeSetter = function () {
 	);
 };
 
+<<<<<<< HEAD
 /**
  * 对象复制（浅拷贝）
  *
@@ -446,6 +449,8 @@ H.extend = function (a, b) {
 	}
 	return a;
 };
+=======
+>>>>>>> upstream/master
 
 /**
  * 深拷贝多个对象。
@@ -716,7 +721,32 @@ H.syncTimeout = function (fn, delay, context) {
 
 
 /**
+<<<<<<< HEAD
  * 返回第一个不为 null 或 undefined 的参数
+=======
+ * Utility function to extend an object with the members of another.
+ *
+ * @function #extend
+ * @memberOf Highcharts
+ * @param {Object} a - The object to be extended.
+ * @param {Object} b - The object to add to the first one.
+ * @returns {Object} Object a, the original object.
+ */
+H.extend = function (a, b) {
+	var n;
+	if (!a) {
+		a = {};
+	}
+	for (n in b) {
+		a[n] = b[n];
+	}
+	return a;
+};
+
+
+/**
+ * Return the first value that is not null or undefined.
+>>>>>>> upstream/master
  *
  * @function #pick
  * @memberOf Highcharts
@@ -888,6 +918,7 @@ H.wrap = function (obj, method, func) {
 	};
 };
 
+<<<<<<< HEAD
 /**
  * 根据全局配置获取当前的时区信息。
  * Get the time zone offset based on the current timezone information as set in
@@ -1026,6 +1057,9 @@ H.dateFormat = function (format, timestamp, capitalize) {
 		format.substr(0, 1).toUpperCase() + format.substr(1) :
 		format;
 };
+=======
+
+>>>>>>> upstream/master
 
 /**
  * 格式化单个变量，类似 C 语言中 printf 用法
@@ -1037,9 +1071,13 @@ H.dateFormat = function (format, timestamp, capitalize) {
  * @memberOf Highcharts
  * @param {String} format The format string.
  * @param {*} val The value.
+ * @param {Time}   [time]
+ *        A `Time` instance that determines the date formatting, for example for
+ *        applying time zone corrections to the formatted date.
+ 
  * @returns {String} The formatted representation of the value.
  */
-H.formatSingle = function (format, val) {
+H.formatSingle = function (format, val, time) {
 	var floatRegex = /f$/,
 		decRegex = /\.([0-9])/,
 		lang = H.defaultOptions.lang,
@@ -1057,7 +1095,7 @@ H.formatSingle = function (format, val) {
 			);
 		}
 	} else {
-		val = H.dateFormat(format, val);
+		val = (time || H.time).dateFormat(format, val);
 	}
 	return val;
 };
@@ -1069,9 +1107,21 @@ H.formatSingle = function (format, val) {
  *
  * @function #format
  * @memberOf Highcharts
+<<<<<<< HEAD
  * @param {String} str 需要格式化的字符串。
  * @param {Object} ctx 需要替换的内容，是键值对的形式。
  * @returns {String} 格式化后的字符串。
+=======
+ * @param {String} str
+ *        The string to format.
+ * @param {Object} ctx
+ *        The context, a collection of key-value pairs where each key is
+ *        replaced by its value.
+ * @param {Time}   [time]
+ *        A `Time` instance that determines the date formatting, for example for
+ *        applying time zone corrections to the formatted date.
+ * @returns {String} The formatted string.
+>>>>>>> upstream/master
  *
  * @example
  * var s = Highcharts.format(
@@ -1080,7 +1130,7 @@ H.formatSingle = function (format, val) {
  * );
  * // => The red fox was 3.14 feet long
  */
-H.format = function (str, ctx) {
+H.format = function (str, ctx, time) {
 	var splitter = '{',
 		isInside = false,
 		segment,
@@ -1115,7 +1165,7 @@ H.format = function (str, ctx) {
 
 			// Format the replacement
 			if (valueAndFormat.length) {
-				val = H.formatSingle(valueAndFormat.join(':'), val);
+				val = H.formatSingle(valueAndFormat.join(':'), val, time);
 			}
 
 			// Push the result and advance the cursor
@@ -1432,17 +1482,36 @@ H.numberFormat = function (number, decimals, decimalPoint, thousandsSep) {
 		thousands,
 		ret,
 		roundedNumber,
-		exponent = number.toString().split('e');
+		exponent = number.toString().split('e'),
+		fractionDigits;
 
 	if (decimals === -1) {
 		// Preserve decimals. Not huge numbers (#3793).
 		decimals = Math.min(origDec, 20);
 	} else if (!H.isNumber(decimals)) {
 		decimals = 2;
-	} else if (decimals && exponent[1] && origDec - exponent[1] > decimals) {
+	} else if (decimals && exponent[1] && exponent[1] < 0) {
 		// Expose decimals from exponential notation (#7042)
-		exponent[0] *= Math.pow(10, exponent[1] - decimals);
-		exponent[1] = decimals;
+		fractionDigits = decimals + +exponent[1];
+		if (fractionDigits >= 0) {
+			// remove too small part of the number while keeping the notation
+			exponent[0] = (+exponent[0]).toExponential(fractionDigits)
+				.split('e')[0];
+			decimals = fractionDigits;
+		} else {
+			// fractionDigits < 0
+			exponent[0] = exponent[0].split('.')[0] || 0;
+
+			if (decimals < 20) {
+				// use number instead of exponential notation (#7405)
+				number = (exponent[0] * Math.pow(10, exponent[1]))
+					.toFixed(decimals);
+			} else {
+				// or zero
+				number = 0;
+			}
+			exponent[1] = 0;
+		}
 	}
 
 	// Add another decimal to avoid rounding errors of float numbers. (#4573)
@@ -1753,7 +1822,11 @@ H.addEvent = function (el, type, fn) {
 	// If events are previously set directly on the prototype, pick them up 
 	// and copy them over to the instance. Otherwise instance handlers would
 	// be set on the prototype and apply to multiple charts in the page.
-	if (el.hcEvents && !el.hasOwnProperty('hcEvents')) {
+	if (
+		el.hcEvents &&
+		// IE8, window and document don't have hasOwnProperty
+		!Object.prototype.hasOwnProperty.call(el, 'hcEvents')
+	) {
 		itemEvents = {};
 		H.objectEach(el.hcEvents, function (handlers, eventType) {
 			itemEvents[eventType] = handlers.slice(0);

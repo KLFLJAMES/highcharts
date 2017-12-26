@@ -710,7 +710,11 @@ if (!H.ColorAxis) {
 		/**
 		 * Fool the legend
 		 */
-		setState: noop,
+		setState: function (state) {
+			each(this.series, function (series) {
+				series.setState(state);
+			});
+		},
 		visible: true,
 		setVisible: noop,
 		getSeriesExtremes: function () {
@@ -746,10 +750,16 @@ if (!H.ColorAxis) {
 				point.plotX = plotX;
 				point.plotY = plotY;
 
-				if (this.cross) {
+				if (
+					this.cross &&
+					!this.cross.addedToColorAxis &&
+					this.legendGroup
+				) {
 					this.cross
 						.addClass('highcharts-coloraxis-marker')
 						.add(this.legendGroup);
+
+					this.cross.addedToColorAxis = true;
 
 					/*= if (build.classic) { =*/
 					this.cross.attr({
