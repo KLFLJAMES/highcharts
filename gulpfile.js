@@ -1466,6 +1466,17 @@ gulp.task('scripts-new', () => {
     // Build all module files
     const pathJSParts = './js/';
     const pathESModules = './code/';
+    const getTime = () => {
+        const date = new Date();
+        const pad = val => {
+            return (val <= 9 ? '0' + val : '' + val);
+        };
+        return [
+            pad(date.getHours()),
+            pad(date.getMinutes()),
+            pad(date.getSeconds())
+        ].join(':');
+    };
     buildModules({
         base: pathJSParts,
         output: pathESModules,
@@ -1514,7 +1525,8 @@ gulp.task('scripts-new', () => {
             const pathRelative = relative(pathJSParts, pathFile);
             console.log([
                 '',
-                `${event.type}:`.cyan + ` ${relative('.', pathFile)}`,
+                `${event.type}:`.cyan + ` ${relative('.', pathFile)} ` +
+                getTime().gray,
                 'Rebuilding files: '.cyan,
                 types
                     .map((type) => `- ${join(pathESModules, type === 'css' ? 'js' : '', 'es-modules', pathRelative)}`.gray)
@@ -1542,7 +1554,8 @@ gulp.task('scripts-new', () => {
                       return arr;
                   }, []);
                 console.log([
-                    `${event.type}:`.cyan + ` ${relative('.', pathFile)}`,
+                    `${event.type}:`.cyan + ` ${relative('.', pathFile)} ` +
+                    getTime().gray,
                     'Rebuilding files: '.cyan,
                     filesModified
                       .map(str => `- ${join('code', type === 'css' ? 'js' : '', str)}`.gray)

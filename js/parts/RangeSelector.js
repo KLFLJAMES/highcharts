@@ -315,6 +315,7 @@ RangeSelector.prototype = {
 				ctx = {
 					range: rangeOptions,
 					max: newMax,
+					chart: chart,
 					dataMin: dataMin,
 					dataMax: dataMax
 				};
@@ -551,7 +552,7 @@ RangeSelector.prototype = {
 				(type === 'month' || type === 'year') &&
 				(
 					actualRange + 36e5 >=
-					{ month: 28, year: 365 }[type] * day * count + offsetRange
+					{ month: 28, year: 365 }[type] * day * count - offsetRange
 				) &&
 				(
 					actualRange - 36e5 <=
@@ -861,7 +862,7 @@ RangeSelector.prototype = {
 		var time = this.chart.time,
 			min,
 			now = new time.Date(dataMax),
-			year = now[time.getFullYear](),
+			year = time.get('FullYear', now),
 			startOfYear = useUTC ? time.Date.UTC(year, 0, 1) : +new time.Date(year, 0, 1); // eslint-disable-line new-cap
 		min = Math.max(dataMin || 0, startOfYear);
 		now = now.getTime();
